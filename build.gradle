@@ -3,6 +3,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.3'
@@ -13,20 +14,11 @@ buildscript {
     }
 }
 
-def githubProperties = new Properties()
-githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
-
 allprojects {
     repositories {
         google()
         jcenter()
-        maven {url = "https://maven.pkg.github.com/ZiggeoJitpackService/androidsdk"
-            credentials {
-                username = System.getenv('GITHUB_USER') ?: githubProperties['GITHUB_USER']
-                password = System.getenv('GITHUB_PERSONAL_ACCESS_TOKEN') ?: githubProperties['GITHUB_PERSONAL_ACCESS_TOKEN']
-            }
-        }
-
+        mavenCentral()
         maven { url 'https://jitpack.io'}
         flatDir {
             dirs 'libs'
