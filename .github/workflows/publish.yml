@@ -14,19 +14,18 @@ jobs:
         with:
           java-version: '11'
 
-      - name: Create keystore file
-        run: cat /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64 | base64
-
-      - name: Putting keystore data
-        env:
-          DATA: ${{ secrets.KEYSTORE }}
-        run: echo $DATA > /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: 'app/z_release_keystore.jks'
+          encodedString: ${{ secrets.KEYSTORE }}
 
       - name: Configure Keystore
         run: |
-          echo "$ANDROID_KEYSTORE_FILE" > /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64
-          base64 -d -i /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64 > /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks
-          echo "storeFile=/home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks" >> keystore.properties
+          echo "$ANDROID_KEYSTORE_FILE" > /app/z_release_keystore.jks.b64
+          base64 -d -i /app/z_release_keystore.jks.b64 > /app/z_release_keystore.jks
+          echo "storeFile=/app/z_release_keystore.jks" >> keystore.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> keystore.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> keystore.properties
           echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> keystore.properties
