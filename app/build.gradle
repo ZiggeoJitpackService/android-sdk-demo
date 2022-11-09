@@ -33,7 +33,7 @@ android {
         release {
             keyAlias = System.getenv("keyAlias")
             keyPassword = System.getenv("keyPassword")
-            storeFile = System.getenv('storeFile') ? file(System.getenv('storeFile')) : file('app/z_release_keystore.jks') ?:null
+            storeFile = System.getenv('storeFile') ? file(System.getenv('storeFile')) : file('z_release_keystore.jks') ?:null
             storePassword = System.getenv("storePassword")
         }
     }
