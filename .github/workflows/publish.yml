@@ -29,12 +29,12 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Create file
-        run: cat /home/runner/work/android_demo/android_demo/app/google-services.json | base64
+        run: cat /home/runner/work/android-sdk-demo/android-sdk-demo/app/google-services.json | base64
 
       - name: Putting data
         env:
           DATA: ${{ secrets.PLAY_CONFIG_JSON }}
-        run: echo $DATA > /home/runner/work/android_demo/android_demo/app/google-services.json
+        run: echo $DATA > /home/runner/work/android-sdk-demo/android-sdk-demo/app/google-services.json
 
 #      - name: Create Google Play Config file
 #        run: |
