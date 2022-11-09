@@ -5,29 +5,31 @@ on: [ push ]
 jobs:
   build:
     runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: '11'
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v3
 
-      - name: Build APK
-        run: gradle build --stacktrace
+            - name: Setup JDK
+              uses: actions/setup-java@v1
+              with:
+                java-version: '11'
 
-      - name: Build APK test
-        run: bash ./gradlew assembleRelease --stacktrace -PGITHUB_USER=${ {secrets.GITHUB_USER} } -PGITHUB_PERSONAL_ACCESS_TOKEN=${ {secrets.GITHUB_PERSONAL_ACCESS_TOKEN} }
+            - name: Build APK
+              run: gradle build --stacktrace
 
-      uses: r0adkll/upload-google-play@v1
-      with:
-        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-        packageName: com.ziggeo.androidsdk.demo
-        releaseFiles: app/build/outputs/bundle/release/app-release.aab
-        track: production
-        status: inProgress
-        inAppUpdatePriority: 2
-        userFraction: 0.33
-        whatsNewDirectory: distribution/whatsnew
-        mappingFile: app/build/outputs/mapping/release/mapping.txt
-        debugSymbols: app/intermediates/merged_native_libs/release/out/lib
+            - name: Build APK test
+              run: bash ./gradlew assembleRelease --stacktrace -PGITHUB_USER=${ {secrets.GITHUB_USER} } -PGITHUB_PERSONAL_ACCESS_TOKEN=${ {secrets.GITHUB_PERSONAL_ACCESS_TOKEN} }
+
+            - name: Build APK test
+              uses: r0adkll/upload-google-play@v1
+              with:
+                serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+                packageName: com.ziggeo.androidsdk.demo
+                releaseFiles: app/build/outputs/bundle/release/app-release.aab
+                track: production
+                status: inProgress
+                inAppUpdatePriority: 2
+                userFraction: 0.33
+                whatsNewDirectory: distribution/whatsnew
+                mappingFile: app/build/outputs/mapping/release/mapping.txt
+                debugSymbols: app/intermediates/merged_native_libs/release/out/lib
