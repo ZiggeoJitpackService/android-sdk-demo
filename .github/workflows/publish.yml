@@ -22,12 +22,12 @@ jobs:
           DATA: ${{ secrets.KEYSTORE }}
         run: echo $DATA > /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64
 
-#      - name: Decode Keystore
-#        id: decode_keystore
-#        uses: timheuer/base64-to-file@v1
-#        with:
-#          fileName: 'app/z_release_keystore.jks'
-#          encodedString: ${{ secrets.KEYSTORE }}
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: '/home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks'
+          encodedString: ${{ secrets.KEYSTORE }}
 
       - name: Configure Keystore
         run: |
