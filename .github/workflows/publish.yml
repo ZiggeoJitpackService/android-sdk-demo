@@ -23,8 +23,6 @@ jobs:
 
       - name: Configure Keystore
         run: |
-          echo "$ANDROID_KEYSTORE_FILE" > /app/z_release_keystore.jks.b64
-          base64 -d -i /app/z_release_keystore.jks.b64 > /app/z_release_keystore.jks
           echo "storeFile=/app/z_release_keystore.jks" >> keystore.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> keystore.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> keystore.properties
