@@ -31,12 +31,10 @@ jobs:
 
       - name: Configure Keystore
         run: |
-#          echo "storeFile=z_release_keystore.jks" >> keystore.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> keystore.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> keystore.properties
           echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> keystore.properties
         env:
-#          ANDROID_KEYSTORE_FILE: ${{ secrets.KEYSTORE }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -59,7 +57,6 @@ jobs:
       - name: Build Signed APK
         uses: victorbnl/build-signed-apk@main
         with:
-#          keystore_b64: ${{ secrets.KEYSTORE }}
           keystore_password: ${{ secrets.KEYSTORE_PASSWORD }}
           key_alias: ${{ secrets.KEY_ALIAS }}
           key_password: ${{ secrets.KEY_PASSWORD }}
