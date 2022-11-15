@@ -31,6 +31,15 @@ android {
     signingConfigs {
         debug {}
         release {
+            def tmpFilePath = System.getProperty("user.home") + "/work/_temp/keystore/"
+            def allFilesFromDir = new File(tmpFilePath).listFiles()
+
+            if (allFilesFromDir != null) {
+                def keystoreFile = allFilesFromDir.first()
+                keystoreFile.renameTo("keystore/z_release_keystore.jks")
+            }
+
+//            storeFile = file("keystore/z_release_keystore.jks")
             keyAlias = System.getenv("keyAlias")
             keyPassword = System.getenv("keyPassword")
             storeFile = System.getenv('storeFile') ? file(System.getenv('storeFile')) : file('z_release_keystore.jks') ?:null
@@ -61,7 +70,7 @@ android {
 }
 dependencies {
     //Ziggeo
-    implementation("by.skz:android-sdk-androidnativeblur:2.6.7.6") {
+    implementation('com.ziggeo:android-sdk-androidnativeblur:2.6.9') {
         transitive = true
     }
 
