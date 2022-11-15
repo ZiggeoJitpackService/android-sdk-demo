@@ -29,7 +29,7 @@ jobs:
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
         with:
-          fileName: '/home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks'
+          fileName: 'z_release_keystore.jks'
           encodedString: ${{ secrets.KEYSTORE }}
 
       #      - name: Configure Keystore
@@ -46,7 +46,7 @@ jobs:
       #
       - name: Create key.properties
         run: |
-          echo "storeFile=/home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks" > keystore.properties
+          echo "storeFile=z_release_keystore.jks" > keystore.properties
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
@@ -63,7 +63,7 @@ jobs:
 #        env:
 #          ENCODED_STRING: ${{ secrets.KEYSTORE }}
 #        run: |
-#          TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/keystore
+#          TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"
 #          mkdir "${TMP_KEYSTORE_FILE_PATH}"
 #          echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/z_release_keystore.jks
 
