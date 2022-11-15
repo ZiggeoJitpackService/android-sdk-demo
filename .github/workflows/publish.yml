@@ -26,15 +26,15 @@ jobs:
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
         with:
-          fileName: 'keystore/z_release_keystore.jks'
+          fileName: '/home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks'
           encodedString: ${{ secrets.KEYSTORE }}
 
       - name: Configure Keystore
         run: |
-          echo "storeFile=z_release_keystore.jks" >> key.properties
-          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
-          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
-          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
+          echo "storeFile=z_release_keystore.jks" >> keystore.properties
+          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> keystore.properties
+          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> keystore.properties
+          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> keystore.properties
         env:
           ANDROID_KEYSTORE_FILE: ${{ secrets.KEYSTORE }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -43,10 +43,10 @@ jobs:
 
       - name: Create key.properties
         run: |
-            echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
-            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
-            echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-            echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+            echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > keystore.properties
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+            echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
 
       - name: Create google services file
         run: cat /home/runner/work/android-sdk-demo/android-sdk-demo/app/google-services.json | base64
