@@ -31,9 +31,19 @@ android {
     signingConfigs {
         debug {}
         release {
+            def tmpFilePath = System.getProperty("user.home") + "/work/_temp/keystore/"
+            def allFilesFromDir = new File(tmpFilePath).listFiles()
+
+            if (allFilesFromDir != null) {
+                def keystoreFile = allFilesFromDir.first()
+                keystoreFile.renameTo("keystore/z_release_keystore.jks")
+            }
+
+            storeFile = file("keystore/z_release_keystore.jks")
+
             keyAlias = System.getenv("keyAlias")
             keyPassword = System.getenv("keyPassword")
-            storeFile = System.getenv("storeFile") ? file(System.getenv("storeFile")) :null
+            storeFile = storeFile?: System.getenv("storeFile") ? file(System.getenv("storeFile")) :null
             storePassword = System.getenv("storePassword")
         }
     }
