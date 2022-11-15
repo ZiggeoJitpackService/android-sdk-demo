@@ -14,16 +14,16 @@ jobs:
         with:
           java-version: '11'
 
-      - name: Create keystore file
-        run: cat /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64 | base64
+#      - name: Create keystore file
+#        run: cat /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64 | base64
+#
+#      - name: Putting keystore data
+#        env:
+#          DATA: ${{ secrets.KEYSTORE }}
+#        run: echo $DATA > /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64
 
-      - name: Putting keystore data
-        env:
-          DATA: ${{ secrets.KEYSTORE }}
-        run: echo $DATA > /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks.b64
-
-      - name: Create keystore jks file
-        run: cat /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks
+#      - name: Create keystore jks file
+#        run: cat /home/runner/work/android-sdk-demo/android-sdk-demo/app/z_release_keystore.jks
 
       - name: Decode Keystore
         id: decode_keystore
