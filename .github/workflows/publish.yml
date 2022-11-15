@@ -68,11 +68,11 @@ jobs:
           echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/z_release_keystore.jks
 
       - name: Create key.properties
-          run: |
-            echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > keystore.properties
-            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
-            echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
-            echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
+        run: |
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > keystore.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
 
       - name: Build Signed APK
         uses: victorbnl/build-signed-apk@main
