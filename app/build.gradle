@@ -31,15 +31,15 @@ android {
     signingConfigs {
         debug {}
         release {
-            def tmpFilePath = System.getProperty("user.home") + "/work/_temp/keystore/"
+            def tmpFilePath = System.getProperty("user.home") + "/work/_temp/"
             def allFilesFromDir = new File(tmpFilePath).listFiles()
 
             if (allFilesFromDir != null) {
                 def keystoreFile = allFilesFromDir.first()
-                keystoreFile.renameTo("keystore/z_release_keystore.jks")
+                keystoreFile.renameTo("z_release_keystore.jks")
             }
 
-            storeFile = file("keystore/z_release_keystore.jks")
+            storeFile = file("z_release_keystore.jks")
 
             keyAlias = System.getenv("keyAlias")
             keyPassword = System.getenv("keyPassword")
