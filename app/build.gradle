@@ -24,7 +24,7 @@ android {
         vectorDrawables.useSupportLibrary true
         multiDexEnabled true
         buildConfigField("String", "APP_TOKEN", "\"" + System.getenv("app_token") + "\"")
-        setProperty("archivesBaseName", "androidKotlin-v" + versionName + "_" + getDate())
+        setProperty("archivesBaseName", "androidKotlin-v" + versionName)
 
         missingDimensionStrategy "dim", "androidnativeblur" // for internal development
     }
