@@ -55,4 +55,4 @@ jobs:
           inAppUpdatePriority: 2
           userFraction: 0.33
 #          whatsNewDirectory: distribution/whatsnew
-          mappingFile: app/build/outputs/mapping/release/mapping.txt
+#          mappingFile: app/build/outputs/mapping/release/mapping.txt
