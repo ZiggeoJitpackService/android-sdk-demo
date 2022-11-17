@@ -18,6 +18,9 @@ jobs:
         with:
           ruby-version: '2.6'
 
+      - name: cd app
+        run: cd app
+
       - name: Install bundle
         run: |
           bundle config path vendor/bundle
