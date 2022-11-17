@@ -9,22 +9,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-#      - name: Setup JDK
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: '11'
-
-      - uses: actions/setup-ruby@v1
+      - name: Setup JDK
+        uses: actions/setup-java@v1
         with:
-          ruby-version: '2.6'
-
-      - name: cd app
-        run: cd app
-
-      - name: Install bundle
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
+          java-version: '11'
 
       - name: Decode Keystore
         id: decode_keystore
@@ -63,18 +51,13 @@ jobs:
         env:
           PLAY_CONFIG_JSON: ${{ secrets.SERVICE_ACCOUNT_B64 }}
 
-      - name: Distribute app to Beta track 🚀
-        run: bundle exec fastlane beta
-
       - name: Publish APK test
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: com.ziggeo.androidsdk.demo
-          releaseFiles: app/build/outputs/apk/release/androidKotlin-v1.3.1-release.apk
+          releaseFiles: app/build/outputs/apk/release/androidKotlin-v1.3.2-release.apk
           track: test
           status: inProgress
           inAppUpdatePriority: 2
           userFraction: 0.33
-#          whatsNewDirectory: distribution/whatsnew
-#          mappingFile: app/build/outputs/mapping/release/mapping.txt
