@@ -14,6 +14,15 @@ jobs:
         with:
           java-version: '11'
 
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
+
+      - name: Install bundle
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+
       - name: Decode Keystore
         id: decode_keystore
         uses: timheuer/base64-to-file@v1
