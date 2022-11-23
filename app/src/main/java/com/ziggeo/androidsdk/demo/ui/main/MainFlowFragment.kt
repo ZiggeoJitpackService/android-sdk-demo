@@ -1,21 +1,22 @@
 package com.ziggeo.androidsdk.demo.ui.main
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.GravityCompat
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.google.firebase.analytics.ktx.logEvent
 import com.ziggeo.androidsdk.demo.R
 import com.ziggeo.androidsdk.demo.Screens
+import com.ziggeo.androidsdk.demo.databinding.FragmentDrawerFlowBinding
 import com.ziggeo.androidsdk.demo.presentation.main.MainFlowPresenter
 import com.ziggeo.androidsdk.demo.presentation.main.MainFlowView
 import com.ziggeo.androidsdk.demo.presentation.main.MainFlowView.MenuItem.*
 import com.ziggeo.androidsdk.demo.ui.global.BaseFlowFragment
 import com.ziggeo.androidsdk.demo.ui.global.BaseFragment
 import com.ziggeo.androidsdk.demo.ui.global.MessageDialogFragment
-import kotlinx.android.synthetic.main.fragment_drawer_flow.*
-import kotlinx.android.synthetic.main.fragment_nav_drawer.*
 
 
 /**
@@ -25,6 +26,8 @@ import kotlinx.android.synthetic.main.fragment_nav_drawer.*
  */
 class MainFlowFragment : BaseFlowFragment(), MainFlowView,
     MessageDialogFragment.OnClickListener {
+    private var _binding: FragmentDrawerFlowBinding? = null
+    private val binding get() = _binding!!
 
     override val layoutRes = R.layout.fragment_drawer_flow
 
@@ -44,6 +47,20 @@ class MainFlowFragment : BaseFlowFragment(), MainFlowView,
         selectMenuItem(menuItem)
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentDrawerFlowBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun getContainerId() = R.id.main_container
 
     override fun getLaunchScreen() = Screens.Recordings
@@ -58,16 +75,16 @@ class MainFlowFragment : BaseFlowFragment(), MainFlowView,
         analytics.logEvent("drawer_open") {
             param("open", open.toString())
         }
-        if (open) drawer.openDrawer(GravityCompat.START)
-        else drawer.closeDrawer(GravityCompat.START)
+        if (open) binding.drawer.openDrawer(GravityCompat.START)
+        else binding.drawer.closeDrawer(GravityCompat.START)
     }
 
     override fun showAccName(appToken: String?) {
-        tv_app_token.text = appToken
+        binding.drawerNav.tvAppToken.text = appToken
     }
 
     override fun onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (binding.drawer.isDrawerOpen(GravityCompat.START)) {
             openNavDrawer(false)
         } else {
             currentFragment?.onBackPressed() ?: router.exit()
@@ -119,8 +136,8 @@ class MainFlowFragment : BaseFlowFragment(), MainFlowView,
     }
 
     override fun selectMenuItem(item: MainFlowView.MenuItem) {
-        (0 until drawer_menu_container.childCount)
-            .map { drawer_menu_container.getChildAt(it) }
+        (0 until binding.drawerNav.drawerMenuContainer.childCount)
+            .map { binding.drawerNav.drawerMenuContainer.getChildAt(it) }
             .forEach { menuItem -> menuItem.tag?.let { menuItem.isSelected = it == item } }
     }
 
@@ -131,13 +148,13 @@ class MainFlowFragment : BaseFlowFragment(), MainFlowView,
     }
 
     private fun initToolbar() {
-        with(toolbar) {
+        with(binding.toolbar) {
             setNavigationOnClickListener { openNavDrawer(true) }
         }
     }
 
     private fun initDrawerMenu() {
-        iv_logout.setOnClickListener {
+        binding.drawerNav.ivLogout.setOnClickListener {
             MessageDialogFragment.create(
                 message = getString(R.string.logout_message),
                 positive = getString(R.string.common_yes),
@@ -146,21 +163,21 @@ class MainFlowFragment : BaseFlowFragment(), MainFlowView,
             ).show(childFragmentManager, CONFIRM_LOGOUT_TAG)
         }
 
-        mi_recordings.tag = RECORDINGS
-        mi_settings.tag = SETTINGS
-        mi_sdks.tag = SDKS
-        mi_clients.tag = CLIENTS
-        mi_contact.tag = CONTACT_US
-        mi_about.tag = ABOUT
-        mi_log.tag = LOG
+        binding.drawerNav.miRecordings.tag = RECORDINGS
+        binding.drawerNav.miSettings.tag = SETTINGS
+        binding.drawerNav.miSdks.tag = SDKS
+        binding.drawerNav.miClients.tag = CLIENTS
+        binding.drawerNav.miContact.tag = CONTACT_US
+        binding.drawerNav.miAbout.tag = ABOUT
+        binding.drawerNav.miLog.tag = LOG
 
-        mi_recordings.setOnClickListener(itemClickListener)
-        mi_settings.setOnClickListener(itemClickListener)
-        mi_sdks.setOnClickListener(itemClickListener)
-        mi_clients.setOnClickListener(itemClickListener)
-        mi_contact.setOnClickListener(itemClickListener)
-        mi_about.setOnClickListener(itemClickListener)
-        mi_log.setOnClickListener(itemClickListener)
+        binding.drawerNav.miRecordings.setOnClickListener(itemClickListener)
+        binding.drawerNav.miSettings.setOnClickListener(itemClickListener)
+        binding.drawerNav.miSdks.setOnClickListener(itemClickListener)
+        binding.drawerNav.miClients.setOnClickListener(itemClickListener)
+        binding.drawerNav.miContact.setOnClickListener(itemClickListener)
+        binding.drawerNav.miAbout.setOnClickListener(itemClickListener)
+        binding.drawerNav.miLog.setOnClickListener(itemClickListener)
 
         selectMenuItem(RECORDINGS)
     }

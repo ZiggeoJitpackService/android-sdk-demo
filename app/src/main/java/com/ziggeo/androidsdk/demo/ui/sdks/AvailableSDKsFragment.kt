@@ -1,15 +1,19 @@
 package com.ziggeo.androidsdk.demo.ui.sdks
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentAvailableSdksBinding
 import com.ziggeo.androidsdk.demo.model.data.feature.FeatureModel
 import com.ziggeo.androidsdk.demo.model.data.feature.SdkModel
 import com.ziggeo.androidsdk.demo.presentation.availablesdks.AvailableSDKsPresenter
 import com.ziggeo.androidsdk.demo.presentation.availablesdks.AvailableSDKsView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
-import kotlinx.android.synthetic.main.fragment_available_sdks.*
 
 
 /**
@@ -19,6 +23,8 @@ import kotlinx.android.synthetic.main.fragment_available_sdks.*
  */
 class AvailableSDKsFragment : BaseToolbarFragment<AvailableSDKsView, AvailableSDKsPresenter>(),
     AvailableSDKsView {
+    private var _binding: FragmentAvailableSdksBinding? = null
+    private val binding get() = _binding!!
 
     override val layoutRes = R.layout.fragment_available_sdks
 
@@ -28,6 +34,20 @@ class AvailableSDKsFragment : BaseToolbarFragment<AvailableSDKsView, AvailableSD
     @ProvidePresenter
     override fun providePresenter(): AvailableSDKsPresenter =
         scope.getInstance(AvailableSDKsPresenter::class.java)
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAvailableSdksBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun getHeaderTextRes() = R.string.sdks_header
 
@@ -48,8 +68,8 @@ class AvailableSDKsFragment : BaseToolbarFragment<AvailableSDKsView, AvailableSD
                 }
             }
         }
-        rv_sdks.layoutManager = layoutManager
-        rv_sdks.adapter = adapter
+        binding.rvSdks.layoutManager = layoutManager
+        binding.rvSdks.adapter = adapter
     }
 
 }

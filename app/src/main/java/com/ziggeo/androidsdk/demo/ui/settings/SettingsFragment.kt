@@ -3,15 +3,17 @@ package com.ziggeo.androidsdk.demo.ui.settings
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.google.android.material.snackbar.Snackbar
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentSettingsBinding
 import com.ziggeo.androidsdk.demo.presentation.settings.SettingsPresenter
 import com.ziggeo.androidsdk.demo.presentation.settings.SettingsView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
-import kotlinx.android.synthetic.main.fragment_settings.*
 
 
 /**
@@ -20,6 +22,8 @@ import kotlinx.android.synthetic.main.fragment_settings.*
  * alexb@ziggeo.com
  */
 class SettingsFragment : BaseToolbarFragment<SettingsView, SettingsPresenter>(), SettingsView {
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
     override val layoutRes = R.layout.fragment_settings
 
     @InjectPresenter
@@ -31,9 +35,23 @@ class SettingsFragment : BaseToolbarFragment<SettingsView, SettingsPresenter>(),
 
     override fun getHeaderTextRes() = R.string.settings_header
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        et_start_delay.addTextChangedListener(object : TextWatcher {
+        binding.etStartDelay.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 var startDelayValue = 0
                 if (!s.isNullOrEmpty()) {
@@ -49,34 +67,34 @@ class SettingsFragment : BaseToolbarFragment<SettingsView, SettingsPresenter>(),
             }
         })
 
-        sc_custom_video.isChecked = presenter.getCustomVideoMode()
-        sc_custom_camera.isChecked = presenter.getCustomCameraMode()
-        sc_blur_mode.isChecked = presenter.getBlurMode()
+        binding.scCustomVideo.isChecked = presenter.getCustomVideoMode()
+        binding.scCustomCamera.isChecked = presenter.getCustomCameraMode()
+        binding.scBlurMode.isChecked = presenter.getBlurMode()
 
-        sc_custom_video.setOnCheckedChangeListener { _, isChecked ->
+        binding.scCustomVideo.setOnCheckedChangeListener { _, isChecked ->
             presenter.onCustomVideoChanged(
                 isChecked
             )
         }
 
-        sc_custom_camera.setOnCheckedChangeListener { _, isChecked ->
+        binding.scCustomCamera.setOnCheckedChangeListener { _, isChecked ->
             presenter.onCustomCameraChanged(
                 isChecked
             )
         }
 
-        sc_blur_mode.setOnCheckedChangeListener { _, isChecked ->
+        binding.scBlurMode.setOnCheckedChangeListener { _, isChecked ->
             presenter.onBlurModeChanged(
                 isChecked
             )
         }
 
-        btn_save.setOnClickListener {
+        binding.btnSave.setOnClickListener {
             presenter.onSaveClicked()
         }
     }
 
     override fun showSavedNotification() {
-        Snackbar.make(root, R.string.successfully_saved_message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, R.string.successfully_saved_message, Snackbar.LENGTH_SHORT).show()
     }
 }

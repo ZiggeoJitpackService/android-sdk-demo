@@ -1,15 +1,17 @@
 package com.ziggeo.androidsdk.demo.ui.contactus
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentContactUsBinding
 import com.ziggeo.androidsdk.demo.presentation.contactus.ContactUsPresenter
 import com.ziggeo.androidsdk.demo.presentation.contactus.ContactUsView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
 import com.ziggeo.androidsdk.demo.util.openUrl
-import kotlinx.android.synthetic.main.fragment_contact_us.*
 
 
 /**
@@ -18,6 +20,8 @@ import kotlinx.android.synthetic.main.fragment_contact_us.*
  * alexb@ziggeo.com
  */
 class ContactUsFragment : BaseToolbarFragment<ContactUsView, ContactUsPresenter>(), ContactUsView {
+    private var _binding: FragmentContactUsBinding? = null
+    private val binding get() = _binding!!
     override val layoutRes = R.layout.fragment_contact_us
 
     @InjectPresenter
@@ -29,12 +33,26 @@ class ContactUsFragment : BaseToolbarFragment<ContactUsView, ContactUsPresenter>
 
     override fun getHeaderTextRes() = R.string.contact_header
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentContactUsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btn_visit_support.setOnClickListener {
+        binding.btnVisitSupport.setOnClickListener {
             presenter.onVisitSupportClicked()
         }
-        btn_contact_us.setOnClickListener {
+        binding.btnContactUs.setOnClickListener {
             presenter.onContactUsClicked()
         }
     }

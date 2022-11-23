@@ -2,18 +2,22 @@ package com.ziggeo.androidsdk.demo.ui.custom
 
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentCustomVideoPlayerBinding
 import com.ziggeo.androidsdk.demo.di.DI
 import com.ziggeo.androidsdk.demo.presentation.custom.CustomModeVideoPresenter
 import com.ziggeo.androidsdk.demo.ui.global.BaseScreenFragment
-import kotlinx.android.synthetic.main.fragment_custom_video_player.*
 
 class CustomModeVideoFragment :
     BaseScreenFragment<CustomModeVideoView,
             CustomModeVideoPresenter>(), CustomModeVideoView {
+    private var _binding: FragmentCustomVideoPlayerBinding? = null
+    private val binding get() = _binding!!
 
     override val parentScopeName = DI.APP_SCOPE
 
@@ -27,34 +31,48 @@ class CustomModeVideoFragment :
     override fun providePresenter(): CustomModeVideoPresenter =
         scope.getInstance(CustomModeVideoPresenter::class.java)
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentCustomVideoPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        z_video_view.loadConfigs()
-        z_video_view.initViews()
+        binding.zVideoView.loadConfigs()
+        binding.zVideoView.initViews()
 
-        if (z_video_view.callback != null) {
-            z_video_view.callback.loaded()
+        if (binding.zVideoView.callback != null) {
+            binding.zVideoView.callback.loaded()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        z_video_view.onPause()
+        binding.zVideoView.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        z_video_view.onResume()
+        binding.zVideoView.onResume()
     }
 
     override fun startVideo(token: String) {
-        z_video_view.videoTokens = listOf(token)
-        z_video_view.prepareQueueAndStartPlaying()
+        binding.zVideoView.videoTokens = listOf(token)
+        binding.zVideoView.prepareQueueAndStartPlaying()
     }
 
     override fun startVideoFile(path: Uri) {
-        z_video_view.videoUris = listOf(path)
-        z_video_view.prepareQueueAndStartPlaying()
+        binding.zVideoView.videoUris = listOf(path)
+        binding.zVideoView.prepareQueueAndStartPlaying()
     }
 
 }

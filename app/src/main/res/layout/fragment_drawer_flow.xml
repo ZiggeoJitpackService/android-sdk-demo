@@ -32,7 +32,12 @@
         android:background="@color/colorPrimary"
         android:fitsSystemWindows="true">
 
-        <include layout="@layout/fragment_nav_drawer" />
+        <include
+            android:id="@+id/drawer_nav"
+            layout="@layout/fragment_nav_drawer"
+        />
+
+<!--        <include layout="@layout/fragment_nav_drawer" />-->
     </FrameLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -3,7 +3,9 @@ package com.ziggeo.androidsdk.demo.ui.recordings
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -14,12 +16,12 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentRecordingDetailsBinding
 import com.ziggeo.androidsdk.demo.presentation.recordings.RecordingDetailsPresenter
 import com.ziggeo.androidsdk.demo.presentation.recordings.RecordingDetailsView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
 import com.ziggeo.androidsdk.demo.ui.global.MessageDialogFragment
 import com.ziggeo.androidsdk.net.models.ContentModel
-import kotlinx.android.synthetic.main.fragment_recording_details.*
 
 
 /**
@@ -33,6 +35,8 @@ class RecordingDetailsFragment : BaseToolbarFragment<RecordingDetailsView,
         RecordingDetailsPresenter>(),
     RecordingDetailsView,
     MessageDialogFragment.OnClickListener {
+    private var _binding: FragmentRecordingDetailsBinding? = null
+    private val binding get() = _binding!!
 
     override fun getHeaderTextRes(): Int = R.string.details_header
 
@@ -45,50 +49,64 @@ class RecordingDetailsFragment : BaseToolbarFragment<RecordingDetailsView,
     override fun providePresenter(): RecordingDetailsPresenter =
         scope.getInstance(RecordingDetailsPresenter::class.java)
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentRecordingDetailsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             presenter.onBackPressed()
         }
-        toolbar.setOnMenuItemClickListener {
+        binding.toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.item_edit -> presenter.onEditClicked()
                 R.id.item_delete -> presenter.onDeleteClicked()
                 R.id.item_save -> presenter.onSaveClicked(
-                    et_token_or_key.text.toString(),
-                    et_title.text.toString(),
-                    et_description.text.toString()
+                    binding.etTokenOrKey.text.toString(),
+                    binding.etTitle.text.toString(),
+                    binding.etDescription.text.toString()
                 )
             }
             true
         }
-        fab_play.setOnClickListener {
+        binding.fabPlay.setOnClickListener {
             presenter.onPlayClicked()
         }
     }
 
     override fun showRecordingData(contentModel: ContentModel) {
-        et_token_or_key.setText(contentModel.key ?: contentModel.token)
-        et_title.setText(contentModel.title)
-        et_description.setText(contentModel.description)
+        binding.etTokenOrKey.setText(contentModel.key ?: contentModel.token)
+        binding.etTitle.setText(contentModel.title)
+        binding.etDescription.setText(contentModel.description)
     }
 
     override fun showPreview(url: String, isVideo: Boolean) {
         if (url.isEmpty()) {
-            iv_preview.setImageResource(R.drawable.ic_microphone)
-            iv_preview.setOnClickListener {
+            binding.ivPreview.setImageResource(R.drawable.ic_microphone)
+            binding.ivPreview.setOnClickListener {
                 presenter.onPlayClicked()
             }
         } else {
 
-            val circularProgressDrawable = CircularProgressDrawable(activity!!.baseContext)
+            val circularProgressDrawable = CircularProgressDrawable(requireActivity().baseContext)
             circularProgressDrawable
-                .setColorFilter(ContextCompat.getColor(activity!!, R.color.colorAccent), PorterDuff.Mode.SRC_IN )
+                .setColorFilter(ContextCompat.getColor(requireActivity(), R.color.colorAccent), PorterDuff.Mode.SRC_IN )
             circularProgressDrawable.strokeWidth = 10f
             circularProgressDrawable.centerRadius = 35f
             circularProgressDrawable.start()
 
-            Glide.with(iv_preview)
+            Glide.with(binding.ivPreview)
                 .load(url)
                 .placeholder(circularProgressDrawable)
                 .listener(object : RequestListener<Drawable> {
@@ -110,9 +128,9 @@ class RecordingDetailsFragment : BaseToolbarFragment<RecordingDetailsView,
                         isFirstResource: Boolean
                     ): Boolean {
                         if (isVideo) {
-                            fab_play.show()
+                            binding.fabPlay.show()
                         } else {
-                            iv_preview.setOnClickListener {
+                            binding.ivPreview.setOnClickListener {
                                 presenter.onPlayClicked()
                             }
                         }
@@ -120,38 +138,38 @@ class RecordingDetailsFragment : BaseToolbarFragment<RecordingDetailsView,
                     }
 
                 })
-                .into(iv_preview)
+                .into(binding.ivPreview)
         }
     }
 
     override fun showViewsInEditState() {
-        toolbar.menu.clear()
-        toolbar.inflateMenu(R.menu.details_menu_edit_mode)
+        binding.toolbar.menu.clear()
+        binding.toolbar.inflateMenu(R.menu.details_menu_edit_mode)
 
-        et_token_or_key.isEnabled = true
-        et_title.isEnabled = true
-        et_description.isEnabled = true
+        binding.etTokenOrKey.isEnabled = true
+        binding.etTitle.isEnabled = true
+        binding.etDescription.isEnabled = true
 
         context?.let {
-            toolbar.navigationIcon = ContextCompat.getDrawable(it, R.drawable.ic_close_white_24dp)
-            toolbar.setNavigationOnClickListener {
+            binding.toolbar.navigationIcon = ContextCompat.getDrawable(it, R.drawable.ic_close_white_24dp)
+            binding.toolbar.setNavigationOnClickListener {
                 presenter.onCloseClicked()
             }
         }
     }
 
     override fun showViewsInViewState() {
-        toolbar.menu.clear()
-        toolbar.inflateMenu(R.menu.details_menu_view_mode)
+        binding.toolbar.menu.clear()
+        binding.toolbar.inflateMenu(R.menu.details_menu_view_mode)
 
-        et_token_or_key.isEnabled = false
-        et_title.isEnabled = false
-        et_description.isEnabled = false
+        binding.etTokenOrKey.isEnabled = false
+        binding.etTitle.isEnabled = false
+        binding.etDescription.isEnabled = false
 
         context?.let {
-            toolbar.navigationIcon =
+            binding.toolbar.navigationIcon =
                 ContextCompat.getDrawable(it, R.drawable.ic_arrow_back_white_24dp)
-            toolbar.setNavigationOnClickListener {
+            binding.toolbar.setNavigationOnClickListener {
                 presenter.onBackPressed()
             }
         }

@@ -3,12 +3,12 @@ package com.ziggeo.androidsdk.demo.ui.log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ziggeo.androidsdk.demo.R
 import com.ziggeo.androidsdk.demo.ui.global.FeatureViewHolder
 import com.ziggeo.androidsdk.log.LogModel
 import com.ziggeo.androidsdk.utils.DateTimeUtils
-import kotlinx.android.synthetic.main.item_log.view.*
 import java.util.*
 
 /**
@@ -35,15 +35,17 @@ class LogAdapter(private val list: List<LogModel>) :
     }
 
     class LogsViewHolder(
-        private val view: View
+        private val view: View,
+        private var tvLog: TextView? = view.findViewById(R.id.tv_log),
     ) : FeatureViewHolder(view) {
         fun bind(logModel: LogModel) {
+
             val format = if (logModel.details == null) {
                 "[%s] %s"
             } else {
                 "[%s] %s: %s"
             }
-            view.tv_log.text = String.format(
+            tvLog?.text = String.format(
                 format,
                 DateTimeUtils.formatDate(Date(logModel.timestamp)),
                 logModel.name,
