@@ -63,7 +63,7 @@ android {
 }
 dependencies {
     //Ziggeo
-    implementation('com.ziggeo:android-sdk-androidnativeblur:2.6.9') {
+    implementation('com.ziggeo:android-sdk-androidnativeblur:2.6.11') {
         transitive = true
     }
 
