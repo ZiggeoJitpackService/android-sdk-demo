@@ -56,7 +56,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: com.ziggeo.androidsdk.demo
-          releaseFiles: app/build/outputs/apk/release/androidKotlin-v1.3.2-release.apk
+          releaseFiles: app/build/outputs/apk/release/androidKotlin-v1.3.3-release.apk
           track: internal
           status: inProgress
           inAppUpdatePriority: 2
