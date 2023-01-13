@@ -5,12 +5,6 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.crashlytics'
 apply from: "../build.gradle"
 
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
-
 android {
     def sdk = 31
     compileSdkVersion sdk
@@ -25,22 +19,23 @@ android {
         minSdkVersion 21
         targetSdkVersion sdk
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        versionCode 19
-        versionName "1.3.1"
+        versionCode 20
+        versionName "1.3.2"
         vectorDrawables.useSupportLibrary true
         multiDexEnabled true
         buildConfigField("String", "APP_TOKEN", "\"" + System.getenv("app_token") + "\"")
-        setProperty("archivesBaseName", "androidKotlin-v" + versionName + "_" + getDate())
+        setProperty("archivesBaseName", "androidKotlin-v" + versionName)
 
         missingDimensionStrategy "dim", "androidnativeblur" // for internal development
     }
     signingConfigs {
         debug {}
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
+//todo for nonautorelese
+//            keyAlias = System.getenv("keyAlias")
+//            keyPassword = System.getenv("keyPassword")
+//            storeFile = storeFile?: System.getenv("storeFile") ? file(System.getenv("storeFile")) :null
+//            storePassword = System.getenv("storePassword")
         }
     }
     buildTypes {
@@ -50,7 +45,8 @@ android {
         }
         release {
             manifestPlaceholders = [crashlyticsCollectionEnabled: "true"]
-            signingConfig signingConfigs.release
+//todo for nonautorelese
+//            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -67,15 +63,9 @@ android {
 }
 dependencies {
     //Ziggeo
-
-    implementation ('com.ziggeo.androidsdk:androidnativeblur:2.6.6.rc1') {
+    implementation('com.ziggeo:android-sdk-androidnativeblur:2.6.11') {
         transitive = true
     }
-//    implementation("com.github.ZiggeoJitpackService:Android-SDK:2.6.5_no_blur")
-//            {
-//                transitive = true
-//            }
-//    implementation project(":sdk") // for internal development
 
     //Support
     implementation "androidx.appcompat:appcompat:1.2.0"
