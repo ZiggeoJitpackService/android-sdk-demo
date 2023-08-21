@@ -100,19 +100,19 @@ class RecordingDetailsPresenter @Inject constructor(
         analytics.logEvent("play_clicked") {
             param("video_token", token)
         }
-        if (prefs.isCustomVideo) {
-            kvStorage.put(VIDEO_TOKEN, model.token)
-            router.startFlow(Screens.CustomModeVideo)
-        } else {
-            if (model is VideoModel) {
+        if (model is VideoModel) {
+            if (prefs.isCustomVideo) {
+                kvStorage.put(VIDEO_TOKEN, model.token)
+                router.startFlow(Screens.CustomModeVideo)
+            } else {
                 ziggeo.startPlayer(token)
             }
-            if (model is Audio) {
-                ziggeo.startAudioPlayer(token)
-            }
-            if (model is Image) {
-                ziggeo.showImage(token)
-            }
+        }
+        if (model is Audio) {
+            ziggeo.startAudioPlayer(token)
+        }
+        if (model is Image) {
+            ziggeo.showImage(token)
         }
     }
 

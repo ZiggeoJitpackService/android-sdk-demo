@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -573,7 +574,9 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
         val permissions: ArrayList<String> = object : ArrayList<String>() {
             init {
                 add(Manifest.permission.CAMERA)
-                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                if (Build.VERSION.SDK_INT <= 29) {
+                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
             }
         }
         return permissions.toArray(arrayOf())

@@ -81,9 +81,9 @@ class RecordingDetailsFragment : BaseToolbarFragment<RecordingDetailsView,
             }
         } else {
 
-            val circularProgressDrawable = CircularProgressDrawable(activity!!.baseContext)
+            val circularProgressDrawable = CircularProgressDrawable(requireActivity().baseContext)
             circularProgressDrawable
-                .setColorFilter(ContextCompat.getColor(activity!!, R.color.colorAccent), PorterDuff.Mode.SRC_IN )
+                .setColorFilter(ContextCompat.getColor(requireActivity(), R.color.colorAccent), PorterDuff.Mode.SRC_IN )
             circularProgressDrawable.strokeWidth = 10f
             circularProgressDrawable.centerRadius = 35f
             circularProgressDrawable.start()
