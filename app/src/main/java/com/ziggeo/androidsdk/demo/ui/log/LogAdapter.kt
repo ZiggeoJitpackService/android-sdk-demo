@@ -4,12 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.ItemLogBinding
 import com.ziggeo.androidsdk.demo.ui.global.FeatureViewHolder
 import com.ziggeo.androidsdk.log.LogModel
 import com.ziggeo.androidsdk.utils.DateTimeUtils
-import kotlinx.android.synthetic.main.item_log.view.*
-import java.util.*
+import java.util.Date
 
 /**
  * Created by Alexander Bedulin on 04-Oct-19.
@@ -19,14 +18,20 @@ import java.util.*
 class LogAdapter(private val list: List<LogModel>) :
     RecyclerView.Adapter<LogAdapter.LogsViewHolder>() {
 
+    private var _binding: ItemLogBinding? = null
+
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+
     override fun getItemCount(): Int = list.size
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): LogsViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_log, parent, false)
+        _binding = ItemLogBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val view = binding.root
         return LogsViewHolder(view)
     }
 
@@ -37,13 +42,14 @@ class LogAdapter(private val list: List<LogModel>) :
     class LogsViewHolder(
         private val view: View
     ) : FeatureViewHolder(view) {
+        val binding = ItemLogBinding.bind(view)
         fun bind(logModel: LogModel) {
             val format = if (logModel.details == null) {
                 "[%s] %s"
             } else {
                 "[%s] %s: %s"
             }
-            view.tv_log.text = String.format(
+            binding.tvLog.text = String.format(
                 format,
                 DateTimeUtils.formatDate(Date(logModel.timestamp)),
                 logModel.name,

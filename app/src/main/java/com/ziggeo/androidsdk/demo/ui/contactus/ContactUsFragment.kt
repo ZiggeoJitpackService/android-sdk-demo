@@ -1,15 +1,17 @@
 package com.ziggeo.androidsdk.demo.ui.contactus
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentContactUsBinding
 import com.ziggeo.androidsdk.demo.presentation.contactus.ContactUsPresenter
 import com.ziggeo.androidsdk.demo.presentation.contactus.ContactUsView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
 import com.ziggeo.androidsdk.demo.util.openUrl
-import kotlinx.android.synthetic.main.fragment_contact_us.*
 
 
 /**
@@ -23,6 +25,26 @@ class ContactUsFragment : BaseToolbarFragment<ContactUsView, ContactUsPresenter>
     @InjectPresenter
     lateinit var presenter: ContactUsPresenter
 
+    private var _binding: FragmentContactUsBinding? = null
+
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentContactUsBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     @ProvidePresenter
     override fun providePresenter(): ContactUsPresenter =
         scope.getInstance(ContactUsPresenter::class.java)
@@ -31,10 +53,10 @@ class ContactUsFragment : BaseToolbarFragment<ContactUsView, ContactUsPresenter>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btn_visit_support.setOnClickListener {
+        _binding?.btnVisitSupport?.setOnClickListener {
             presenter.onVisitSupportClicked()
         }
-        btn_contact_us.setOnClickListener {
+        _binding?.btnContactUs?.setOnClickListener {
             presenter.onContactUsClicked()
         }
     }

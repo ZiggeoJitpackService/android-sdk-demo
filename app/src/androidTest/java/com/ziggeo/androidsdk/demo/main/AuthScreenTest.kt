@@ -2,7 +2,10 @@ package com.ziggeo.androidsdk.demo.main
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.NoActivityResumedException
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
@@ -30,29 +33,44 @@ class AuthScreenTest : BaseTest() {
         val application = ApplicationProvider.getApplicationContext<Application>()
         val scope = Toothpick.openScope(DI.APP_SCOPE)
         prefs = scope.getInstance(Prefs::class.java)
-        prefs.appToken = null
+        prefs.appToken = TOKEN
     }
 
-    @Test
-    fun dumbTest() {
-    }
+//    @Test
+//    fun testScreenContent() {
+//        onScreen<AuthScreen> {
+//            // is logo visible and has correct image
+//            ivLogo.isDisplayed()
+//            ivLogo.hasDrawable(R.drawable.ic_ziggeo_logo)
+//
+//            // is message visible and has correct text
+//            tvMessage.isDisplayed()
+//            tvMessage.hasText(R.string.auth_message)
+//
+//            // is button visible, has correct text and enabled
+//            btnScanQr.isDisplayed()
+//            btnScanQr.isEnabled()
+//            btnScanQr.isClickable()
+//            btnScanQr.hasText(R.string.btn_scan_qr_text)
+//        }
+//    }
 
     @Test
-    fun testScreenContent() {
+    fun testLogin() {
         onScreen<AuthScreen> {
-            // is logo visible and has correct image
-            ivLogo.isDisplayed()
-            ivLogo.hasDrawable(R.drawable.ic_ziggeo_logo)
+            // is button visible
+            tvEnterManually.isDisplayed()
+            tvEnterManually.click()
 
-            // is message visible and has correct text
-            tvMessage.isDisplayed()
-            tvMessage.hasText(R.string.auth_message)
+            Espresso.onView(ViewMatchers.withId(R.id.et_qr))
+                .perform(ViewActions.typeText(TOKEN))
 
             // is button visible, has correct text and enabled
-            btnScanQr.isDisplayed()
-            btnScanQr.isEnabled()
-            btnScanQr.isClickable()
-            btnScanQr.hasText(R.string.btn_scan_qr_text)
+            btnUseEnteredQr.isDisplayed()
+            btnUseEnteredQr.isEnabled()
+            btnUseEnteredQr.isClickable()
+            btnUseEnteredQr.hasText(R.string.btn_use_entered_text)
+            btnUseEnteredQr.click()
         }
     }
 
@@ -61,6 +79,10 @@ class AuthScreenTest : BaseTest() {
         onScreen<AuthScreen> {
             pressBack()
         }
+    }
+
+    companion object {
+        val TOKEN = "d541dc6b1351d6424b04fb8415658e0d"
     }
 
 }

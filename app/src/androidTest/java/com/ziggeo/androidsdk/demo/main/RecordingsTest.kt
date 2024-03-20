@@ -1,13 +1,13 @@
 package com.ziggeo.androidsdk.demo.main
 
+import android.os.SystemClock
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import androidx.test.rule.ActivityTestRule
 import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.ziggeo.androidsdk.demo.BuildConfig
 import com.ziggeo.androidsdk.demo.R
 import com.ziggeo.androidsdk.demo.di.DI
 import com.ziggeo.androidsdk.demo.model.data.storage.Prefs
@@ -25,7 +25,8 @@ class RecordingsTest : BaseTest() {
 
     @Rule
     @JvmField
-    val rule = ActivityTestRule(AppActivity::class.java)
+//    val rule = ActivityTestRule(AppActivity::class.java)
+    val rule = IntentsTestRule(AppActivity::class.java)
 
     @Before
     fun before() {
@@ -33,12 +34,8 @@ class RecordingsTest : BaseTest() {
         // this will allow to navigate to the main screen
         val scope = Toothpick.openScope(DI.APP_SCOPE)
         prefs = scope.getInstance(Prefs::class.java)
-        prefs.appToken = BuildConfig.APP_TOKEN
-    }
-
-    @Test
-    fun dumbTest() {
-
+//        prefs.appToken = "d541dc6b1351d6424b04fb8415658e0d";
+        prefs.appToken = AuthScreenTest.TOKEN
     }
 
     @Test
@@ -90,26 +87,29 @@ class RecordingsTest : BaseTest() {
 
     @Test
     fun testHidingBtnsOnListScroll() {
-//        onScreen<RecordingsScreen> {
-//            btnShowActions.isDisplayed()
-//            rvRecordings.scrollToEnd()
-//            btnShowActions.isNotDisplayed()
-//        }
+        onScreen<RecordingsScreen> {
+            btnShowActions.isDisplayed()
+            SystemClock.sleep(3000)
+            rvRecordings.swipeUp()
+            rvRecordings.swipeUp()
+            rvRecordings.swipeUp()
+            btnShowActions.isNotDisplayed()
+        }
     }
 
     @Test
     fun testList() {
-//        onScreen<RecordingsScreen> {
-//            rvRecordings {
-//                firstChild<RecordingsScreen.NestedItem> {
-//                    isDisplayed()
-//                    ivIcon.hasDrawable(R.drawable.ic_videocam_white_24dp)
-//                    tvVideoToken.hasAnyText()
-//                    tvStatus.hasAnyText()
-//                    tvDate.hasAnyText()
-//                }
-//            }
-//        }
+        onScreen<RecordingsScreen> {
+            SystemClock.sleep(3000)
+            rvRecordings {
+                firstChild<RecordingsScreen.NestedItem> {
+                    isDisplayed()
+                    tvVideoToken.hasAnyText()
+                    tvStatus.hasAnyText()
+                    tvDate.hasAnyText()
+                }
+            }
+        }
     }
 
 }

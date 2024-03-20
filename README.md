@@ -94,7 +94,7 @@ For Proguard config please see `app\\proguard-rules.pro`
 
 ```
 	dependencies {
-		implementation 'com.github.ZiggeoJitpackService:Android-SDK:$version'
+		implementation 'com.ziggeo:android-sdk:$version'
 	}
 ```
 

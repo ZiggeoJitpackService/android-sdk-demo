@@ -2,7 +2,9 @@ package com.ziggeo.androidsdk.demo.ui.recordings
 
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.RequiresApi
@@ -10,12 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import com.ziggeo.androidsdk.Ziggeo
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentRecordingsBinding
 import com.ziggeo.androidsdk.demo.presentation.recordings.RecordingsPresenter
 import com.ziggeo.androidsdk.demo.presentation.recordings.RecordingsView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
 import com.ziggeo.androidsdk.net.models.ContentModel
-import kotlinx.android.synthetic.main.fragment_recordings.*
+import com.ziggeo.androidsdk.recorder.RecorderConfig
+import com.ziggeo.androidsdk.widgets.cameraview.CameraView
 
 
 /**
@@ -33,6 +38,25 @@ class RecordingsFragment : BaseToolbarFragment<RecordingsView, RecordingsPresent
     private lateinit var rotateForward: Animation
     private lateinit var rotateBackward: Animation
 
+    private var _binding: FragmentRecordingsBinding? = null
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentRecordingsBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     @ProvidePresenter
     override fun providePresenter(): RecordingsPresenter =
         scope.getInstance(RecordingsPresenter::class.java)
@@ -42,15 +66,15 @@ class RecordingsFragment : BaseToolbarFragment<RecordingsView, RecordingsPresent
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initFab()
-        pull_to_refresh.setOnRefreshListener {
+        _binding?.pullToRefresh?.setOnRefreshListener {
             analytics.logEvent("refresh_recordings", null)
             presenter.onPullToRefresh()
         }
     }
 
     override fun showRecordingsList(list: List<ContentModel>) {
-        tv_empty_list.visibility = View.INVISIBLE
-        rv_recordings.visibility = View.VISIBLE
+        _binding?.tvEmptyList?.visibility = View.INVISIBLE
+        _binding?.rvRecordings?.visibility = View.VISIBLE
 
         val adapter = RecordingsAdapter(list)
         adapter.onItemClickListener = object : RecordingsAdapter.ItemClickListener {
@@ -59,14 +83,14 @@ class RecordingsFragment : BaseToolbarFragment<RecordingsView, RecordingsPresent
             }
         }
 
-        rv_recordings.layoutManager = LinearLayoutManager(context)
-        rv_recordings.adapter = adapter
-        rv_recordings.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        _binding?.rvRecordings?.layoutManager = LinearLayoutManager(context)
+        _binding?.rvRecordings?.adapter = adapter
+        _binding?.rvRecordings?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && fab_selector.isShown) {
+                if (dy > 0 && (_binding != null && _binding!!.fabSelector.isShown)) {
                     presenter.onScrollDown()
-                } else if (dy < 0 && !fab_selector.isShown) {
+                } else if (dy < 0 && !(_binding != null && _binding!!.fabSelector.isShown)) {
                     presenter.onScrollUp()
                 }
             }
@@ -75,41 +99,41 @@ class RecordingsFragment : BaseToolbarFragment<RecordingsView, RecordingsPresent
 
     override fun showActionFabs() {
         analytics.logEvent("fab_show_actions", null)
-        fab_camera.show()
-        fab_screen.show()
-        fab_audio.show()
-        fab_image.show()
-        fab_file.show()
+        _binding?.fabCamera?.show()
+        _binding?.fabScreen?.show()
+        _binding?.fabAudio?.show()
+        _binding?.fabImage?.show()
+        _binding?.fabFile?.show()
     }
 
     override fun hideActionFabs() {
         analytics.logEvent("fab_hide_actions", null)
-        fab_camera.hide()
-        fab_screen.hide()
-        fab_audio.hide()
-        fab_image.hide()
-        fab_file.hide()
+        _binding?.fabCamera?.hide()
+        _binding?.fabScreen?.hide()
+        _binding?.fabAudio?.hide()
+        _binding?.fabImage?.hide()
+        _binding?.fabFile?.hide()
     }
 
     override fun hideSelectorFab() {
-        fab_selector.hide()
+        _binding?.fabSelector?.hide()
     }
 
     override fun showSelectorFab() {
-        fab_selector.show()
+        _binding?.fabSelector?.show()
     }
 
     override fun showNoRecordingsMessage() {
-        tv_empty_list.visibility = View.VISIBLE
-        rv_recordings.visibility = View.INVISIBLE
+        _binding?.tvEmptyList?.visibility = View.VISIBLE
+        _binding?.rvRecordings?.visibility = View.INVISIBLE
     }
 
     override fun showLoading(show: Boolean) {
         if (show) {
-            tv_empty_list.visibility = View.INVISIBLE
-            pull_to_refresh.isRefreshing = true
+            _binding?.tvEmptyList?.visibility = View.INVISIBLE
+            _binding?.pullToRefresh?.isRefreshing = true
         } else {
-            pull_to_refresh.isRefreshing = false
+            _binding?.pullToRefresh?.isRefreshing = false
         }
     }
 
@@ -136,37 +160,56 @@ class RecordingsFragment : BaseToolbarFragment<RecordingsView, RecordingsPresent
 
     override fun startFileSelector() {
         analytics.logEvent("start_file_selector", null)
-        ziggeo.startFileSelector()
+//        ziggeo.startFileSelector()
+
+        initAndStart()
     }
 
+    private fun initAndStart() {
+        val activity = getActivity()
+        var mZiggeo = Ziggeo( ziggeo.getAppToken(), activity!!)
+
+        mZiggeo?.recorderConfig = RecorderConfig.Builder(activity)
+            .maxDuration(10000)
+            .shouldSendImmediately(false)
+            .shouldEnableCoverShot(false)
+            .shouldConfirmStopRecording(false)
+            .facing(CameraView.FACING_FRONT)
+            .shouldShowFaceOutline(false)
+            .quality(CameraView.QUALITY_HIGH)
+            .build()
+        mZiggeo?.startCameraRecorder()
+    }
+
+
     override fun startShowAnimationMainFab() {
-        fab_selector.startAnimation(rotateForward)
+        _binding?.fabSelector?.startAnimation(rotateForward)
     }
 
     override fun startHideAnimationMainFab() {
-        fab_selector.startAnimation(rotateBackward)
+        _binding?.fabSelector?.startAnimation(rotateBackward)
     }
 
     private fun initFab() {
         rotateForward = AnimationUtils.loadAnimation(context, R.anim.rotate_forward)
         rotateBackward = AnimationUtils.loadAnimation(context, R.anim.rotate_backward)
 
-        fab_selector.setOnClickListener {
+        _binding?.fabSelector?.setOnClickListener {
             presenter.onFabActionsClicked()
         }
-        fab_camera.setOnClickListener {
+        _binding?.fabCamera?.setOnClickListener {
             presenter.onFabCameraClicked()
         }
-        fab_screen.setOnClickListener {
+        _binding?.fabScreen?.setOnClickListener {
             presenter.onFabScreenClicked()
         }
-        fab_audio.setOnClickListener {
+        _binding?.fabAudio?.setOnClickListener {
             presenter.onFabAudioClicked()
         }
-        fab_image.setOnClickListener {
+        _binding?.fabImage?.setOnClickListener {
             presenter.onFabImageClicked()
         }
-        fab_file.setOnClickListener {
+        _binding?.fabFile?.setOnClickListener {
             presenter.onFabFileClicked()
         }
     }

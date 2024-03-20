@@ -1,14 +1,18 @@
 package com.ziggeo.androidsdk.demo.ui.topclients
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentTopClientsBinding
 import com.ziggeo.androidsdk.demo.model.data.feature.ClientModel
 import com.ziggeo.androidsdk.demo.presentation.topclients.TopClientsPresenter
 import com.ziggeo.androidsdk.demo.presentation.topclients.TopClientsView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
-import kotlinx.android.synthetic.main.fragment_top_clients.*
 
 
 /**
@@ -23,6 +27,26 @@ class TopClientsFragment : BaseToolbarFragment<TopClientsView, TopClientsPresent
     @InjectPresenter
     lateinit var presenter: TopClientsPresenter
 
+    private var _binding: FragmentTopClientsBinding? = null
+
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentTopClientsBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     @ProvidePresenter
     override fun providePresenter(): TopClientsPresenter =
         scope.getInstance(TopClientsPresenter::class.java)
@@ -36,8 +60,8 @@ class TopClientsFragment : BaseToolbarFragment<TopClientsView, TopClientsPresent
                 presenter.onClientItemClicked(model)
             }
         }
-        rv_clients.layoutManager = GridLayoutManager(context, 2)
-        rv_clients.adapter = adapter
+        _binding?.rvClients?.layoutManager = GridLayoutManager(context, 2)
+        _binding?.rvClients?.adapter = adapter
     }
 
 }

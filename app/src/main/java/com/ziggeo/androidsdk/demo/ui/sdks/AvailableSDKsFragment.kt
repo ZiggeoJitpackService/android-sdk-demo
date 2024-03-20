@@ -1,15 +1,19 @@
 package com.ziggeo.androidsdk.demo.ui.sdks
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentAvailableSdksBinding
 import com.ziggeo.androidsdk.demo.model.data.feature.FeatureModel
 import com.ziggeo.androidsdk.demo.model.data.feature.SdkModel
 import com.ziggeo.androidsdk.demo.presentation.availablesdks.AvailableSDKsPresenter
 import com.ziggeo.androidsdk.demo.presentation.availablesdks.AvailableSDKsView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
-import kotlinx.android.synthetic.main.fragment_available_sdks.*
 
 
 /**
@@ -24,6 +28,26 @@ class AvailableSDKsFragment : BaseToolbarFragment<AvailableSDKsView, AvailableSD
 
     @InjectPresenter
     lateinit var presenter: AvailableSDKsPresenter
+
+    private var _binding: FragmentAvailableSdksBinding? = null
+
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAvailableSdksBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     @ProvidePresenter
     override fun providePresenter(): AvailableSDKsPresenter =
@@ -48,8 +72,8 @@ class AvailableSDKsFragment : BaseToolbarFragment<AvailableSDKsView, AvailableSD
                 }
             }
         }
-        rv_sdks.layoutManager = layoutManager
-        rv_sdks.adapter = adapter
+        _binding?.rvSdks?.layoutManager = layoutManager
+        _binding?.rvSdks?.adapter = adapter
     }
 
 }

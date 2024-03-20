@@ -2,15 +2,17 @@ package com.ziggeo.androidsdk.demo.ui.about
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentAboutBinding
 import com.ziggeo.androidsdk.demo.presentation.about.AboutPresenter
 import com.ziggeo.androidsdk.demo.presentation.about.AboutView
 import com.ziggeo.androidsdk.demo.ui.global.BaseToolbarFragment
 import com.ziggeo.androidsdk.demo.util.fromHtml
-import kotlinx.android.synthetic.main.fragment_about.*
 
 
 /**
@@ -20,6 +22,24 @@ import kotlinx.android.synthetic.main.fragment_about.*
  */
 class AboutFragment : BaseToolbarFragment<AboutView, AboutPresenter>(), AboutView {
     override val layoutRes = R.layout.fragment_about
+    private var _binding: FragmentAboutBinding? = null
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAboutBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     @InjectPresenter
     lateinit var presenter: AboutPresenter
@@ -32,7 +52,7 @@ class AboutFragment : BaseToolbarFragment<AboutView, AboutPresenter>(), AboutVie
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tv_text.text = String.fromHtml(getString(R.string.about_text).replace("\n", "<br>"))
-        tv_text.movementMethod = LinkMovementMethod.getInstance()
+        _binding?.tvText?.text = String.fromHtml(getString(R.string.about_text).replace("\n", "<br>"))
+        _binding?.tvText?.movementMethod = LinkMovementMethod.getInstance()
     }
 }

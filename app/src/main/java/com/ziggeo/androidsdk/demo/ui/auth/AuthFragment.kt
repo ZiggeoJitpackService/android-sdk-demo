@@ -1,16 +1,17 @@
 package com.ziggeo.androidsdk.demo.ui.auth
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
+import android.view.ViewGroup
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentAuthBinding
 import com.ziggeo.androidsdk.demo.di.DI
 import com.ziggeo.androidsdk.demo.presentation.auth.AuthPresenter
 import com.ziggeo.androidsdk.demo.presentation.auth.AuthView
 import com.ziggeo.androidsdk.demo.ui.global.BaseScreenFragment
-import kotlinx.android.synthetic.main.fragment_auth.*
 
 
 /**
@@ -26,50 +27,70 @@ class AuthFragment : BaseScreenFragment<AuthView, AuthPresenter>(), AuthView {
     @InjectPresenter
     lateinit var presenter: AuthPresenter
 
+    private var _binding: FragmentAuthBinding? = null
+
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAuthBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btn_scan_qr.setOnClickListener {
+        _binding?.btnScanQr?.setOnClickListener {
             analytics.logEvent("scan_qr_clicked", null)
             presenter.onScanQrClicked()
         }
-        tv_enter_manually.setOnClickListener {
+        _binding?.tvEnterManually?.setOnClickListener {
             presenter.onEnterQrManuallyClicked()
         }
-        tv_use_scanner.setOnClickListener {
+        _binding?.tvUseScanner?.setOnClickListener {
             presenter.onUseScannerClicked()
         }
-        et_qr.setOnEditorActionListener { _, _, _ ->
-            btn_use_entered_qr.performClick()
+        _binding?.etQr?.setOnEditorActionListener { _, _, _ ->
+            _binding?.btnUseEnteredQr?.performClick()
             true
         }
-        btn_use_entered_qr.setOnClickListener {
+        _binding?.btnUseEnteredQr?.setOnClickListener {
             analytics.logEvent("use_entered_qr_clicked", null)
-            presenter.onUseEnteredQrClicked(et_qr.text.toString())
+            presenter.onUseEnteredQrClicked(_binding?.etQr?.text.toString())
         }
     }
 
     override fun showQrCannotBeEmptyError() {
-        et_qr.error = getString(R.string.err_not_empty)
+        _binding?.etQr?.error = getString(R.string.err_not_empty)
     }
 
     @ProvidePresenter
     override fun providePresenter(): AuthPresenter = scope.getInstance(AuthPresenter::class.java)
 
     override fun showScannerButton() {
-        btn_scan_qr.visibility = View.VISIBLE
-        tv_enter_manually.visibility = View.VISIBLE
+        _binding?.btnScanQr?.visibility = View.VISIBLE
+        _binding?.tvEnterManually?.visibility = View.VISIBLE
 
-        til_qr.visibility = View.INVISIBLE
-        btn_use_entered_qr.visibility = View.GONE
-        tv_use_scanner.visibility = View.GONE
+        _binding?.tilQr?.visibility = View.INVISIBLE
+        _binding?.btnUseEnteredQr?.visibility = View.GONE
+        _binding?.tvUseScanner?.visibility = View.GONE
     }
 
     override fun showEnterQrField() {
-        btn_scan_qr.visibility = View.GONE
-        tv_enter_manually.visibility = View.GONE
+        _binding?.btnScanQr?.visibility = View.GONE
+        _binding?.tvEnterManually?.visibility = View.GONE
 
-        til_qr.visibility = View.VISIBLE
-        btn_use_entered_qr.visibility = View.VISIBLE
-        tv_use_scanner.visibility = View.VISIBLE
+        _binding?.tilQr?.visibility = View.VISIBLE
+        _binding?.btnUseEnteredQr?.visibility = View.VISIBLE
+        _binding?.tvUseScanner?.visibility = View.VISIBLE
     }
 }

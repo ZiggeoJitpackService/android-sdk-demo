@@ -11,7 +11,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -32,6 +34,8 @@ import com.ziggeo.androidsdk.callbacks.IAnalyticsManager
 import com.ziggeo.androidsdk.callbacks.IRecorderCallback
 import com.ziggeo.androidsdk.callbacks.RecorderCallback
 import com.ziggeo.androidsdk.demo.R
+import com.ziggeo.androidsdk.demo.databinding.FragmentAboutBinding
+import com.ziggeo.androidsdk.demo.databinding.FragmentCustomCameraRecorderBinding
 import com.ziggeo.androidsdk.demo.di.DI
 import com.ziggeo.androidsdk.demo.presentation.custom.CustomModeCameraPresenter
 import com.ziggeo.androidsdk.demo.ui.global.BaseScreenFragment
@@ -50,7 +54,6 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_custom_camera_recorder.*
 import java.io.File
 import java.util.*
 
@@ -115,6 +118,25 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
     override val layoutRes: Int
         get() = R.layout.fragment_custom_camera_recorder
 
+    private var _binding: FragmentCustomCameraRecorderBinding? = null
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentCustomCameraRecorderBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onStart() {
         super.onStart()
         if (!isPermissionsGranted()) {
@@ -126,14 +148,14 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
 
     override fun onPause() {
         super.onPause()
-        if (v_start_stop != null && isRecording()) {
+        if (_binding?.vStartStop != null && isRecording()) {
             removeBtnStartListener()
-            v_start_stop.performClick()
+            _binding?.vStartStop?.performClick()
             setBtnStartListener()
         }
 
         isPaused = true
-        cv_camera.stop()
+        _binding?.cvCamera?.stop()
     }
 
     override fun onResume() {
@@ -143,15 +165,15 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
 
     private fun setUi() {
         setBtnStartListener()
-        v_play.setOnClickListener(onClickListener)
+        _binding?.vPlay?.setOnClickListener(onClickListener)
 
         if (disableCameraSwitching) {
-            v_switch_camera.visibility = View.INVISIBLE
+            _binding?.vSwitchCamera?.visibility = View.INVISIBLE
         } else {
-            v_switch_camera.setOnCheckedChangeListener { _: ToggleImageView?, _: Boolean -> switchCamera() }
+            _binding?.vSwitchCamera?.setOnCheckedChangeListener { _: ToggleImageView?, _: Boolean -> switchCamera() }
         }
 
-        cv_camera.start()
+        _binding?.cvCamera?.start()
     }
 
     override fun loadConfigs(ziggeo: IZiggeo) {
@@ -201,14 +223,14 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
 
     private fun loadCameraConfigs() {
 
-        cv_camera.setResolution(this.config.resolution)
-        cv_camera.setVideoBitrate(this.config.videoBitrate)
-        cv_camera.setAudioBitrate(this.config.audioBitrate)
-        cv_camera.setAudioSampleRate(this.config.audioSampleRate)
-        cv_camera.quality = quality
-        cv_camera.facing = this.config.facing
+        _binding?.cvCamera?.setResolution(this.config.resolution)
+        _binding?.cvCamera?.setVideoBitrate(this.config.videoBitrate)
+        _binding?.cvCamera?.setAudioBitrate(this.config.audioBitrate)
+        _binding?.cvCamera?.setAudioSampleRate(this.config.audioSampleRate)
+        _binding?.cvCamera?.quality = quality
+        _binding?.cvCamera?.facing = this.config.facing
 
-        cv_camera.setCameraCallback(object : CameraCallback() {
+        _binding?.cvCamera?.setCameraCallback(object : CameraCallback() {
             override fun cameraOpened() {
                 super.cameraOpened()
                 readyToRecord()
@@ -219,7 +241,7 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
             }
         })
 
-        cv_camera.setRecorderCallback(object : RecorderCallback() {
+        _binding?.cvCamera?.setRecorderCallback(object : RecorderCallback() {
             override fun recordingStarted() {
                 super.recordingStarted()
                 this@CustomModeCameraFragment.recordingStarted()
@@ -284,9 +306,9 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
     protected open fun stopRecording() {
         reset()
         if (config.blurMode) {
-            cv_camera.stopLiveRecording()
+            _binding?.cvCamera?.stopLiveRecording()
         } else {
-            cv_camera.stopRecording()
+            _binding?.cvCamera?.stopRecording()
         }
     }
 
@@ -318,9 +340,9 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
         if (stopRecordingConfirmationDialog != null) {
             stopRecordingConfirmationDialog!!.hide()
         }
-        v_play.visibility = View.INVISIBLE
+        _binding?.vPlay?.visibility = View.INVISIBLE
         if (!disableCameraSwitching) {
-            v_switch_camera.visibility = View.VISIBLE
+            _binding?.vSwitchCamera?.visibility = View.VISIBLE
         }
         removeBtnStartListener()
         switchRecordStartIcon(false)
@@ -331,8 +353,8 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
     fun started() {
         fixedUpdateHandler.start()
         switchRecordStartIcon(true)
-        v_play.visibility = View.INVISIBLE
-        v_switch_camera.visibility = View.INVISIBLE
+        _binding?.vPlay?.visibility = View.INVISIBLE
+        _binding?.vSwitchCamera?.visibility = View.INVISIBLE
     }
 
     private fun confirmStopIfNeeded(positiveAction: Action): Boolean {
@@ -389,10 +411,10 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
         val args = Bundle()
         args.putInt(CountDownDialog.ARG_INITIAL_TIME, delay)
         downDialog.arguments = args
-        downDialog.show(fragmentManager!!, null)
+        downDialog.show(requireFragmentManager(), null)
         countDownHandler.start(delay)
-        activity!!.requestedOrientation = ZiggeoCameraUtils.getCurrentOrientationToRequest(
-            context!!
+        requireActivity().requestedOrientation = ZiggeoCameraUtils.getCurrentOrientationToRequest(
+            requireContext()
         )
     }
 
@@ -444,9 +466,9 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
                             FileUtils.getVideoFileName()
                         )
                         if (config.blurMode) {
-                            cv_camera.startLiveRecording(recordedFile!!.path, maxDuration.toInt())
+                            _binding?.cvCamera?.startLiveRecording(recordedFile!!.path, maxDuration.toInt())
                         } else {
-                            cv_camera.startRecording(recordedFile!!.path, maxDuration.toInt())
+                            _binding?.cvCamera?.startRecording(recordedFile!!.path, maxDuration.toInt())
                         }
                     }
                     .subscribe()
@@ -467,7 +489,7 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
             getCallback()!!.recordingStopped(path)
         }
         resetFixedUpdate()
-        v_play.visibility = View.VISIBLE
+        _binding?.vPlay?.visibility = View.VISIBLE
     }
 
     private fun resetFixedUpdate() {
@@ -484,18 +506,18 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
         when {
             config.timeFormatFunction != null -> {
                 try {
-                    tv_time_status.text = config.timeFormatFunction.apply(elapsedTime, maxDuration)
+                    _binding?.tvTimeStatus?.text = config.timeFormatFunction.apply(elapsedTime, maxDuration)
                 } catch (e: java.lang.Exception) {
                     ZLog.e(e.toString())
-                    tv_time_status.text = null
+                    _binding?.tvTimeStatus?.text = null
                 }
             }
             maxDuration > 0 -> {
-                tv_time_status.text = DateTimeUtils.getTimeStatus(elapsedTime, maxDuration)
+                _binding?.tvTimeStatus?.text = DateTimeUtils.getTimeStatus(elapsedTime, maxDuration)
             }
             else -> {
                 if (isVisible)
-                    tv_time_status.text = DateTimeUtils.formatDuration(elapsedTime)
+                    _binding?.tvTimeStatus?.text = DateTimeUtils.formatDuration(elapsedTime)
             }
         }
     }
@@ -503,39 +525,39 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
     private fun startCameraPreview() {
         if (activity == null) return
         ZLog.d("startCameraPreview()")
-        if (cv_camera != null) {
-            cv_camera.visibility = View.VISIBLE
+        if (_binding?.cvCamera != null) {
+            _binding?.cvCamera?.visibility = View.VISIBLE
         }
-        if (vg_recorder != null) {
-            vg_recorder.setBackgroundColor(colorForStoppedCameraOverlayDefault)
+        if (_binding?.vgRecorder != null) {
+            _binding?.vgRecorder?.setBackgroundColor(colorForStoppedCameraOverlayDefault)
         }
     }
 
     private fun setBtnStartListener() {
-        if (v_start_stop != null) {
-            v_start_stop.setOnClickListener(onClickListener)
-            v_start_stop.isEnabled = true
+        if (_binding?.vStartStop != null) {
+            _binding?.vStartStop?.setOnClickListener(onClickListener)
+            _binding?.vStartStop?.isEnabled = true
         }
     }
 
     private fun removeBtnStartListener() {
-        if (v_start_stop != null) {
-            v_start_stop.setOnClickListener(null)
-            v_start_stop.isEnabled = false
+        if (_binding?.vStartStop != null) {
+            _binding?.vStartStop!!.setOnClickListener(null)
+            _binding?.vStartStop!!.isEnabled = false
         }
     }
 
     open fun switchCamera() {
-        val isFacingBack = cv_camera.facing == CameraView.FACING_BACK
-        cv_camera.facing = if (isFacingBack) CameraView.FACING_FRONT else CameraView.FACING_BACK
+        val isFacingBack = _binding?.cvCamera?.facing == CameraView.FACING_BACK
+        _binding?.cvCamera?.facing = if (isFacingBack) CameraView.FACING_FRONT else CameraView.FACING_BACK
     }
 
     protected open fun isRecording(): Boolean {
-        return cv_camera.isRecording
+        return _binding?.cvCamera?.isRecording?:false;
     }
 
     private fun switchRecordStartIcon(isStarted: Boolean) {
-        v_start_stop.setImageResource(
+        _binding?.vStartStop?.setImageResource(
             if (isStarted) com.ziggeo.androidsdk.R.drawable.ic_stop
             else com.ziggeo.androidsdk.R.drawable.ic_start
         )
@@ -644,7 +666,7 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
                 getCallback()!!.hasCamera()
             }
             loadCameraConfigs()
-            cv_camera.start()
+            _binding?.cvCamera?.start()
         } else {
             if (getCallback() != null) {
                 getCallback()!!.noCamera()
@@ -657,7 +679,7 @@ open class CustomModeCameraFragment : BaseScreenFragment<CustomModeCameraView,
         return if (activity != null) {
             ((activity.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
                     activity.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT))
-                    && cv_camera.numberOfCameras > 0)
+                    && _binding?.cvCamera!!.numberOfCameras > 0)
         } else {
             false
         }
